@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/styleIndex.css">
+    <title>WantToEat</title>
+</head>
+<body>
+    <nav><%- include('customerNavbar.ejs') %></nav>
+    <main>
+        <div class="food-grid">
+            <% products.forEach(food => { %>
+                <div class="food-card">
+                    <img src="<%= food.image %>" alt="<%= food.name %>">
+                    <h2><%= food.name %></h2>
+                    <p><%= food.description %></p>
+                    <button class="select-button" data-food-name="<%= food.name %>">Select</button>
+                </div>
+            <% }); %>
+        </div>
+    </main>
+</body>
+</html>

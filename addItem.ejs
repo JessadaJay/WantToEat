@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="styleAddItem.css" />
+  <title>WantToEat</title>
+</head>
+
+<body>
+  <%- include('navbar.ejs') %>
+    <div class="form-container">
+      <form action="/submit" method="POST">
+        <div>
+          <label for="name">Name:</label>
+          <input type="text" id="name" name="name" placeholder="Enter item name" required />
+        </div>
+        <div>
+          <label for="image">Image URL:</label>
+          <input type="text" id="image" name="image" placeholder="Enter image URL" required />
+        </div>
+        <div>
+          <label for="description">Description:</label>
+          <textarea id="description" name="description" placeholder="Enter item description" rows="4"
+            required></textarea>
+        </div>
+        <button type="submit">Submit</button>
+      </form>
+    </div>
+</body>
+
+</html>

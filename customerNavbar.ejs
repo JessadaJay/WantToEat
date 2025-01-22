@@ -1,0 +1,179 @@
+<link
+  href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+  rel="stylesheet"
+  integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+  crossorigin="anonymous"
+/>
+<script
+  src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+  integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+  crossorigin="anonymous"
+></script>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="http://localhost:8000/index#">WantToEat</a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="http://localhost:8000/index#">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">โต๊ะที่ <%= table.table %></a>
+        </li>
+      </ul>
+      <form class="d-flex">
+        <input
+          class="form-control me-2"
+          type="search"
+          placeholder="Search"
+          aria-label="Search"
+        />
+        <button class="btn btn-outline-success" type="submit">Search</button>
+      </form>
+    </div>
+  </div>
+  <!-- ปุ่ม "ดูอาหารที่เลือก" -->
+  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#selectedFoodsModal">
+    ดูอาหารที่เลือก
+  </button>
+  <!-- ปุ่ม "สั่งอาหาร" -->
+  <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#orderModal">
+    สั่งอาหาร
+  </button>
+
+  <!-- Modal สำหรับดูอาหารที่เลือก -->
+  <div class="modal fade" id="selectedFoodsModal" tabindex="-1" aria-labelledby="selectedFoodsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="selectedFoodsModalLabel">อาหารที่เลือก</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <ul id="selected-food-list">
+            <!-- รายการอาหารจะถูกเพิ่มที่นี่ -->
+          </ul>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal สำหรับการสั่งอาหาร -->
+  <div class="modal fade" id="orderModal" tabindex="-1" aria-labelledby="orderModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="orderModalLabel">สั่งอาหาร</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>ยืนยันการสั่งอาหารที่เลือก</p>
+          <ul id="order-food-list">
+            <!-- รายการอาหารที่เลือกจะแสดงที่นี่ -->
+          </ul>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+        <button type="button" class="btn btn-primary" id="confirm-order">ยืนยันการสั่ง</button>
+      </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<script>
+  const selectedFoods = [];
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const selectButtons = document.querySelectorAll(".select-button");
+    selectButtons.forEach(button => {
+      button.addEventListener("click", (event) => {
+        const foodName = event.target.getAttribute("data-food-name");
+        selectedFoods.push(foodName);
+        
+        // ส่งข้อมูลไปยัง Server ผ่าน Fetch API
+        fetch('/updateSelectedFoods', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ selectedFoods })
+        })
+        .then(response => response.json())
+        .then(data => {
+          // อัปเดตหน้าจอเมื่อข้อมูลได้รับการอัปเดต
+          updateSelectedFoodsList(data.selectedFoods);
+        })
+        .catch(error => console.error('Error:', error));
+      });
+    });
+  });
+
+  function updateSelectedFoodsList(selectedFoods) {
+    const listContainer = document.getElementById('selected-food-list');
+    listContainer.innerHTML = ''; // ล้างรายการเก่า
+    selectedFoods.forEach(food => {
+      const li = document.createElement('li');
+      li.textContent = food;
+      listContainer.appendChild(li);
+    });
+  }
+
+  // ฟังก์ชันอัปเดตรายการอาหารที่เลือกใน modal
+function updateOrderList(selectedFoods) {
+  const orderContainer = document.getElementById('order-food-list');
+  orderContainer.innerHTML = ''; // ล้างรายการเก่า
+  selectedFoods.forEach(food => {
+    const li = document.createElement('li');
+    li.textContent = food;
+    orderContainer.appendChild(li);
+  });
+}
+
+// เมื่อเปิด modal "สั่งอาหาร" ให้แสดงรายการอาหารที่เลือก
+document.getElementById('orderModal').addEventListener('show.bs.modal', function () {
+  updateOrderList(selectedFoods); // แสดงรายการอาหารที่เลือกใน modal
+});
+
+
+// ฟังก์ชันสำหรับการยืนยันการสั่ง
+document.getElementById('confirm-order').addEventListener('click', () => {
+  // ส่งข้อมูล selectedFoods ไปยัง server เมื่อกดปุ่ม "ยืนยันการสั่ง"
+  fetch('/placeOrder', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ selectedFoods })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      alert('สั่งอาหารสำเร็จ');
+      // ทำการปิด modal หลังจากสั่งอาหาร
+      const orderModal = new bootstrap.Modal(document.getElementById('orderModal'));
+orderModal.hide();
+
+      // เคลียร์ selectedFoods และอัปเดตรายการในหน้า
+      selectedFoods.length = 0;
+      updateSelectedFoodsList(selectedFoods);
+    } else {
+      alert('เกิดข้อผิดพลาดในการสั่งอาหาร');
+    }
+  })
+  .catch(error => console.error('Error:', error));
+});
+
+</script>

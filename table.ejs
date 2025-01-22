@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styleTable.css">
+    <title>WanToEat</title>
+    
+</head>
+<body>
+    <div class="input-container">
+        <form action="/customerIndex" method="POST">
+            <label for="table">หมายเลขโต๊ะ</label>
+            <input type="number" id="table" name="table" placeholder="กรุณาใส่หมายเลขโต๊ะ" required>
+            <div class="form-group">
+                <button type="submit">Submit</button>
+            </div>
+        </form>
+        <div class="admin-btn">
+            <a href="/adminRegister">Admin</a>
+        </div>
+    </div>
+</body>
+</html>
